@@ -8,18 +8,33 @@ from subprocess import call
 MAX_OVERLAP_RATIO = 0.5
 MAX_OVERLAP_TOTAL = 10
 
-r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to copy titles by /u/PeachGenitals')
+r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
 subreddit_name = "emojipasta"
 subreddit = r.subreddit(subreddit_name)
 
 text = ""
 
+def is_emoji(char):
+	"""Determines if char is an emoji"""
+	return char in emoji.UNICODE_EMOJI
 
 def sentencify(text):
 	text = text.strip()
+	modified_text = ""
 	if not text.endswith((".", "?", "!")):
 		text += "."
-	return text
+	prevEmoji = is_emoji(text[0])
+	i, j = 0, 0
+	for c in text:
+		if prevEmoji != is_emoji(c):
+			if not prevEmoji:
+				modified_text = modified_text + text[i:j]
+			prevEmoji = not prevEmoji
+			i = j
+		j = j + 1
+	if not i and not prevEmoji:
+		modified_text = text
+	return modified_text
 
 def scrape_emojis():
 	global text
@@ -32,21 +47,17 @@ def scrape_emojis():
 class EmojiText(markovify.Text):
 	"""Markov chain to create emoji pasta scraped from reddit.com/r/emojipasta"""
 
-	def _isemoji(self, char):
-		"""Determines if char is an emoji"""
-		return char in emoji.UNICODE_EMOJI
-
 	# Accept all emoji pastas
 	def test_sentence_input(self, sentence):
 		return True
 
 try:
-	model = open("model.txt", "r", encoding='utf-8')
+	model = open("model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
 except FileNotFoundError:
 	scrape_emojis()
 	emoji_model = EmojiText(text)
-	model = open("model.txt", "w", encoding='utf-8')
+	model = open("model.json", "w", encoding='utf-8')
 	model.write(emoji_model.to_json())
 finally:
 	model.close()
