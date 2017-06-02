@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]
+then
+	echo "need one argument"
+else
+if [ $1 = "get" ]
+then
+	cd ~/projects/reddit_bots/
+	py emoji_pasta.py
+	cd - > /dev/null
+	echo "emoji pasta grabbed"
+elif [ $1 = "gen" ]
+then
+	cd ~/projects/reddit_bots/
+	py emoji_markov.py
+	cd - > /dev/null
+	echo "emoji pasta generated"
+else
+	echo "not a valid command"
+fi
+fi
