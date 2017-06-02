@@ -2,6 +2,7 @@ import emoji
 import json
 import markovify
 import praw
+import random
 
 r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
 
@@ -65,4 +66,13 @@ try:
 	emoji_dict = json.load(open('emoji_map.json', 'r'))
 except FileNotFoundError:
 	collect_emojis()
-print(emoji_dict)
+
+class EmojiGenerator:
+	
+	def __init__(self):
+		self.emoji_dict = json.load(open('emoji_map.json', 'r'))
+
+	def get_emoji(self, word, prob):
+		if random.random() < prob and word in self.emoji_dict:
+			emoji_possibilities = [emoj for emoj in self.emoji_dict[word] for count in range(self.emoji_dict[word][emoj])]
+			return random.choice(emoji_possibilities)

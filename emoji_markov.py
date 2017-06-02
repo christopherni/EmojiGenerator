@@ -1,12 +1,13 @@
 # Inspiration from https://github.com/Deimos/SubredditSimulator
 
 import emoji
+from emoji_generator import EmojiGenerator
+import json
 import markovify
 import praw
+import random
+import re
 from subprocess import call
-
-MAX_OVERLAP_RATIO = 0.5
-MAX_OVERLAP_TOTAL = 10
 
 r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
 subreddit_name = "emojipasta"
@@ -18,22 +19,21 @@ def is_emoji(char):
 	"""Determines if char is an emoji"""
 	return char in emoji.UNICODE_EMOJI
 
+emoji_count = 0
+num_words = 0
+
 def sentencify(text):
+	global emoji_count
 	text = text.strip()
 	modified_text = ""
 	if not text.endswith((".", "?", "!")):
 		text += "."
-	prevEmoji = is_emoji(text[0])
 	i, j = 0, 0
 	for c in text:
-		if prevEmoji != is_emoji(c):
-			if not prevEmoji:
-				modified_text = modified_text + text[i:j]
-			prevEmoji = not prevEmoji
-			i = j
-		j = j + 1
-	if not i and not prevEmoji:
-		modified_text = text
+		if not is_emoji(c):
+			modified_text = modified_text + c
+		# else:
+		# 	emoji_count = emoji_count + 1
 	return modified_text
 
 def scrape_emojis():
@@ -47,6 +47,15 @@ def scrape_emojis():
 class EmojiText(markovify.Text):
 	"""Markov chain to create emoji pasta scraped from reddit.com/r/emojipasta"""
 
+	DEFAULT_MAX_OVERLAP_RATIO = 0.5
+	DEFAULT_MAX_OVERLAP_TOTAL = 10
+
+	# def word_split(self, sentence):
+	# 	global num_words
+	# 	temp = re.split(self.word_split_pattern, sentence)
+	# 	num_words = num_words + len(temp)
+	# 	return temp
+
 	# Accept all emoji pastas
 	def test_sentence_input(self, sentence):
 		return True
@@ -54,6 +63,9 @@ class EmojiText(markovify.Text):
 try:
 	model = open("model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
+	params = json.load(open('emoji_params.json', 'r',))
+	emoji_count = params['emoji_count']
+	num_words = params['num_words']
 except FileNotFoundError:
 	scrape_emojis()
 	emoji_model = EmojiText(text)
@@ -64,7 +76,32 @@ finally:
 
 # Choose random submission to write to emoji.txt
 file = open("emoji.txt", "w", encoding='utf-8')
-file.write(emoji_model.make_sentence())
+avg_words = num_words / 5000
+avg_emojs = emoji_count / 5000
+res = ""
+probability_word = 1.1
+probability_emoji = 1.1
+
+while random.random() < probability_word:
+	res = res + emoji_model.make_sentence()
+	probability_word = 1.1 - len(res.split()) / avg_words
+
+final_res = ""
+emoji_count = 0
+curr_words = 0
+res_words = len(res.split())
+gen = EmojiGenerator()
+for word in res.split():
+	final_res = final_res + word+ ' '
+	emoj = gen.get_emoji(word, probability_emoji)
+	if emoj:
+		final_res = final_res + emoj + ' '
+		emoji_count = emoji_count + 1
+	res_words = res_words + 1
+	probability_emoji = 1.1 - 0.5 * emoji_count / avg_emojs - 0.5 * curr_words / res_words
+
+
+file.write(final_res.strip())
 file.close()
 
 # Copy emoji.txt to clipboard
