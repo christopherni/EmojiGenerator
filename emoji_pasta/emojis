@@ -6,13 +6,13 @@ then
 else
 if [ $1 = "get" ]
 then
-	cd ~/projects/reddit_bots/
+	cd ~/projects/reddit_bots/emoji_pasta
 	py emoji_pasta.py
 	cd - > /dev/null
 	echo "emoji pasta grabbed"
 elif [ $1 = "gen" ]
 then
-	cd ~/projects/reddit_bots/
+	cd ~/projects/reddit_bots/emoji_pasta
 	py emoji_markov.py
 	cd - > /dev/null
 	echo "emoji pasta generated"
