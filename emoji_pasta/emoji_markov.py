@@ -28,7 +28,6 @@ def sentencify(text):
 	modified_text = ""
 	if not text.endswith((".", "?", "!")):
 		text += "."
-	i, j = 0, 0
 	for c in text:
 		if not is_emoji(c):
 			modified_text = modified_text + c

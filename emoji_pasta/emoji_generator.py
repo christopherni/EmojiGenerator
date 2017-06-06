@@ -31,8 +31,11 @@ def collect_emojis():
 			prevEmoji = is_emoji(text[0])
 			i, j = 0, 0
 			for c in text:
+				if is_emoji(c):
+					words.append(c)
 				if prevEmoji != is_emoji(c):
-					words.append(text[i:j])
+					if prevEmoji:
+						words.append(text[i:j])
 					prevEmoji = not prevEmoji
 					i = j
 				j = j + 1
@@ -73,6 +76,7 @@ class EmojiGenerator:
 		self.emoji_dict = json.load(open('emoji_map.json', 'r'))
 
 	def get_emoji(self, word, prob):
+		word = word.lower()
 		if random.random() < prob and word in self.emoji_dict:
 			emoji_possibilities = [emoj for emoj in self.emoji_dict[word] for count in range(self.emoji_dict[word][emoj])]
 			return random.choice(emoji_possibilities)
