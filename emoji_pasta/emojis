@@ -16,6 +16,12 @@ then
 	py emoji_markov.py
 	cd - > /dev/null
 	echo "emoji pasta generated"
+elif [ $1 = "train"]
+then
+	cd ~/projects/reddit_bots/emoji_pasta
+	py emoji_markov.py 'train'
+	cd - > /dev/null
+	echo "emoji pasta trained"
 else
 	echo "not a valid command"
 fi

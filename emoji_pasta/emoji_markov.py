@@ -8,6 +8,7 @@ import praw
 import random
 import re
 from subprocess import call
+import sys
 
 r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
 subreddit_name = "emojipasta"
@@ -35,9 +36,9 @@ def sentencify(text):
 		# 	emoji_count = emoji_count + 1
 	return modified_text
 
-def scrape_emojis():
+def scrape_emojis(submission, num):
 	global text
-	for submission in subreddit.top('all', limit=5000):
+	for submission in subreddit.top(submission, limit=num):
 		if not submission.selftext:
 			text = text + sentencify(submission.title)
 		else:
@@ -62,11 +63,13 @@ class EmojiText(markovify.Text):
 try:
 	model = open("model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
+	if len(sys.argv) > 1:
+		scrape_emojis('today', 20)
 	params = json.load(open('emoji_params.json', 'r',))
 	emoji_count = params['emoji_count']
 	num_words = params['num_words']
 except FileNotFoundError:
-	scrape_emojis()
+	scrape_emojis('all', 5000)
 	emoji_model = EmojiText(text)
 	model = open("model.json", "w", encoding='utf-8')
 	model.write(emoji_model.to_json())
@@ -91,7 +94,7 @@ curr_words = 0
 res_words = len(res.split())
 gen = EmojiGenerator()
 for word in res.split():
-	final_res = final_res + word+ ' '
+	final_res = final_res + word + ' '
 	emoj = gen.get_emoji(word, probability_emoji)
 	if emoj:
 		final_res = final_res + emoj + ' '
