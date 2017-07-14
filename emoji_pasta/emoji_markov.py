@@ -64,7 +64,7 @@ try:
 	model = open("model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
 	if len(sys.argv) > 1:
-		scrape_emojis('today', 20)
+		scrape_emojis('day', 20)
 	params = json.load(open('emoji_params.json', 'r',))
 	emoji_count = params['emoji_count']
 	num_words = params['num_words']
