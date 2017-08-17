@@ -8,18 +8,21 @@ if [ $1 = "get" ]
 then
 	cd ~/projects/reddit_bots/emoji_pasta
 	py emoji_pasta.py
+	rm emojis.txt
 	cd - > /dev/null
 	echo "emoji pasta grabbed"
 elif [ $1 = "gen" ]
 then
 	cd ~/projects/reddit_bots/emoji_pasta
 	py emoji_markov.py
+	rm emojis.txt
 	cd - > /dev/null
 	echo "emoji pasta generated"
 elif [ $1 = "train" ]
 then
 	cd ~/projects/reddit_bots/emoji_pasta
 	py emoji_markov.py 'train'
+	rm emojis.txt
 	cd - > /dev/null
 	echo "emoji pasta trained"
 else
