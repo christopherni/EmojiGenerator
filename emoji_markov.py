@@ -61,6 +61,7 @@ class EmojiText(markovify.Text):
 	def test_sentence_input(self, sentence):
 		return True
 
+# Check if it has been 24 hours since last train.
 def check_time():
 	try:
 		file = open("info.txt", "r")
