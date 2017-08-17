@@ -61,17 +61,17 @@ class EmojiText(markovify.Text):
 		return True
 
 try:
-	model = open("model.json", "r", encoding='utf-8')
+	model = open("json/model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
 	if len(sys.argv) > 1:
 		scrape_emojis('day', 20)
-	params = json.load(open('emoji_params.json', 'r',))
+	params = json.load(open('json/emoji_params.json', 'r',))
 	emoji_count = params['emoji_count']
 	num_words = params['num_words']
 except FileNotFoundError:
 	scrape_emojis('all', 5000)
 	emoji_model = EmojiText(text)
-	model = open("model.json", "w", encoding='utf-8')
+	model = open("json/model.json", "w", encoding='utf-8')
 	model.write(emoji_model.to_json())
 finally:
 	model.close()

@@ -62,18 +62,18 @@ def collect_emojis():
 		else:
 			process_post(submission.selftext)
 
-	with open('emoji_map.json', 'w') as fp:
+	with open('json/emoji_map.json', 'w') as fp:
 		json.dump(emoji_dict, fp)
 
 try:
-	emoji_dict = json.load(open('emoji_map.json', 'r'))
+	emoji_dict = json.load(open('json/emoji_map.json', 'r'))
 except FileNotFoundError:
 	collect_emojis()
 
 class EmojiGenerator:
 	
 	def __init__(self):
-		self.emoji_dict = json.load(open('emoji_map.json', 'r'))
+		self.emoji_dict = json.load(open('json/emoji_map.json', 'r'))
 
 	def get_emoji(self, word, prob):
 		word = word.lower()
