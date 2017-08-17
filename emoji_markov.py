@@ -1,5 +1,6 @@
 # Inspiration from https://github.com/Deimos/SubredditSimulator
 
+from datetime import datetime, timedelta
 import emoji
 from emoji_generator import EmojiGenerator
 import json
@@ -60,10 +61,24 @@ class EmojiText(markovify.Text):
 	def test_sentence_input(self, sentence):
 		return True
 
+def check_time():
+	try:
+		file = open("info.txt", "r")
+		date_string = file.read()
+		last_train = datetime.strptime(date_string, '%c')
+		diff = datetime.now() - last_train
+		file.close()
+		return diff.days > 0
+	except FileNotFoundError:
+		return True
+
 try:
 	model = open("json/model.json", "r", encoding='utf-8')
 	emoji_model = EmojiText.from_json(model.read())
-	if len(sys.argv) > 1:
+	if len(sys.argv) > 1 and check_time():
+		file = open("info.txt", "w")
+		file.write(datetime.now().strftime('%c'))
+		file.close()
 		scrape_emojis('day', 20)
 	params = json.load(open('json/emoji_params.json', 'r',))
 	emoji_count = params['emoji_count']
@@ -81,18 +96,21 @@ file = open("emoji.txt", "w", encoding='utf-8')
 avg_words = num_words / 5000
 avg_emojs = emoji_count / 5000
 res = ""
-probability_word = 1.1
-probability_emoji = 1.1
+probability_word = 1.2
+probability_emoji = 1.2
 
+# Scales probability down as word length approachs average length
 while random.random() < probability_word:
 	res = res + emoji_model.make_sentence()
-	probability_word = 1.1 - len(res.split()) / avg_words
+	probability_word = 1.2 - len(res.split()) / avg_words
 
 final_res = ""
 emoji_count = 0
 curr_words = 0
 res_words = len(res.split())
 gen = EmojiGenerator()
+
+# Scales probability down as emoji frequency approaches average frequency
 for word in res.split():
 	final_res = final_res + word + ' '
 	emoj = gen.get_emoji(word, probability_emoji)
@@ -100,7 +118,7 @@ for word in res.split():
 		final_res = final_res + emoj + ' '
 		emoji_count = emoji_count + 1
 	res_words = res_words + 1
-	probability_emoji = 1.1 - 0.5 * emoji_count / avg_emojs - 0.5 * curr_words / res_words
+	probability_emoji = 1.2 - 0.5 * emoji_count / avg_emojs - 0.5 * curr_words / res_words
 
 
 file.write(final_res.strip())

@@ -21,6 +21,7 @@ def collect_emojis():
 		orig_words = text.split()
 		words = []
 
+		# Collects emojis and preceding word if available
 		def process_word(text):
 			nonlocal words
 			if text.endswith(('.', '!', '?')):
@@ -42,9 +43,12 @@ def collect_emojis():
 			if not i:
 				words.append(text)
 
+		# Processes all words + emojis
 		for word in orig_words:
 			process_word(word)
 
+
+		# Constructs dictionary of dictionaries of frequency of emojis after words
 		for word in words:
 			if not is_emoji(word):
 				prevWord = word
