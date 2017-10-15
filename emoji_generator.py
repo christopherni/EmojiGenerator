@@ -4,7 +4,7 @@ import markovify
 import praw
 import random
 
-r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
+r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/cni5866')
 
 emoji_dict = {}
 def collect_emojis():

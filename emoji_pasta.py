@@ -4,7 +4,7 @@ import random
 from subprocess import call
 
 # Initialize Reddit instance
-r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to copy titles by /u/PeachGenitals')
+r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to copy titles by /u/cni5866')
 
 # Stores the top 10 text
 text = [];
@@ -26,4 +26,4 @@ file.write(random.choice(text))
 file.close()
 
 # Copy emoji.txt to clipboard
-call(['bash', 'copy_emoji.sh'])
+call(['./copy_emoji.sh'])

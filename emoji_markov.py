@@ -11,7 +11,7 @@ import re
 from subprocess import call
 import sys
 
-r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate titles by /u/PeachGenitals')
+r = praw.Reddit('emojipasta', user_agent='emoji_pasta bot to generate emojipastas by /u/cni5866')
 subreddit_name = "emojipasta"
 subreddit = r.subreddit(subreddit_name)
 
@@ -126,4 +126,4 @@ file.write(final_res.strip())
 file.close()
 
 # Copy emoji.txt to clipboard
-call(['bash', 'copy_emoji.sh'])
+call(['./copy_emoji.sh'])
